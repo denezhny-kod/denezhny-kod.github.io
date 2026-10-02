@@ -45,6 +45,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--bg); }
 body {
   margin: 0;
@@ -95,47 +96,87 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
 .opt:hover { border-color: var(--muted); }
 .opt.on { border-color: var(--accent); }
 
+/* экран «считаю» */
+.calc { align-items: center; text-align: center; gap: 18px; padding-block: 18vh 0; }
+.check { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; animation: pop .45s cubic-bezier(.2,1.4,.4,1) both; }
+.check svg { width: 34px; height: 34px; stroke: var(--on-accent); fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .4s .25s ease forwards; }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.calc .bar { width: min(260px, 70%); height: 3px; }
+.calc .bar > i { transition: width 1.5s ease; }
+
 /* результат */
-.tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); }
-.verdict { font-size: 18px; max-width: 44ch; }
-.split { display: flex; flex-direction: column; gap: 12px; }
-.shares { display: flex; flex-direction: column; gap: 12px; }
-.share { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "n p" "b b"; gap: 6px 10px; align-items: baseline; }
+html { scroll-behavior: smooth; }
+.hero { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 16px; padding: 24px 20px 22px; display: flex; flex-direction: column; gap: 16px; animation: in .5s ease both; }
+.pill { align-self: flex-start; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; }
+.hero h1 { font-size: clamp(2.1rem, 10vw, 3.1rem); line-height: 1.05; }
+.verdict { font-size: 18px; line-height: 1.45; max-width: 44ch; }
+.shares { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.share { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "n p" "b b"; gap: 5px 10px; align-items: baseline; }
 .share .n { grid-area: n; font-size: 14px; color: var(--muted); }
 .share .p { grid-area: p; font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
 .share .b { grid-area: b; height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; }
 .share .b i { display: block; height: 100%; background: var(--muted); }
-.share.top .n, .share.top .p { color: var(--fg); font-weight: 600; }
+.share.top .n, .share.top .p { color: var(--fg); font-weight: 700; }
 .share.top .b i { background: var(--accent); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { font-size: 12px; color: var(--fg); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; }
+.toc a:hover { border-color: var(--accent); }
+.toc-l { font-size: 13px; color: var(--muted); }
 
-.block { border-top: 1px solid var(--line); padding-top: 22px; display: flex; flex-direction: column; gap: 14px; }
-.block h3 { margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-.list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.list li { padding-left: 18px; position: relative; }
-.list li::before { content: ""; position: absolute; left: 0; top: .78em; width: 7px; height: 1px; background: var(--accent-text); }
-.list li b { font-weight: 600; }
+.sec { border-top: 1px solid var(--line); padding-top: 26px; display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.sec-h { display: flex; gap: 12px; align-items: baseline; }
+.sec-h .no { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.sec-h h2 { font-size: clamp(1.3rem, 5.4vw, 1.65rem); }
+.list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.list li { padding-left: 20px; position: relative; }
+.list li::before { content: ""; position: absolute; left: 0; top: .72em; width: 8px; height: 2px; background: var(--accent-text); }
+.list li b { font-weight: 700; }
 .scene { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; color: var(--fg); }
-.scene .l { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
-.tp { display: flex; flex-direction: column; gap: 10px; }
-.tp .row { display: grid; grid-template-columns: 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.tp .row div { min-width: 0; }
-.tp .l { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+.calcbox { background: var(--surface); border: 1px dashed var(--accent); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.calcbox .l { font-size: 12px; color: var(--accent-text); letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.tp { display: flex; flex-direction: column; gap: 12px; }
+.tp .row { display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.tp .l { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
 .tp .hold .l { color: var(--muted); }
 .tp .free .l { color: var(--accent-text); }
-.tp .free { padding-top: 8px; border-top: 1px solid var(--line); }
+.tp .free { padding-top: 10px; border-top: 1px solid var(--line); }
+.tp .hold q { color: var(--muted); }
 .tp q { quotes: none; font-size: 16px; line-height: 1.45; }
-.today { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
-.today .l { font-size: 12px; color: var(--accent-text); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; }
+.ifthen { display: flex; flex-direction: column; gap: 12px; }
+.ifthen .row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.ifthen .if { font-size: 13px; color: var(--muted); }
+.ifthen .if b { color: var(--accent-text); letter-spacing: .08em; text-transform: uppercase; font-size: 12px; margin-right: 6px; }
+.ifthen .then b { color: var(--accent-text); letter-spacing: .08em; text-transform: uppercase; font-size: 12px; margin-right: 6px; }
 
-.next { display: flex; flex-direction: column; gap: 16px; }
-.step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-.step .row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
-.step .name { font-weight: 700; font-size: 18px; }
-.step .price { font-variant-numeric: tabular-nums; color: var(--fg); font-weight: 600; }
-.step ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.today { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 26%, var(--surface)), var(--surface) 70%); border: 2px solid var(--accent); border-radius: 16px; padding: 22px 20px; display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 16px; }
+.today .l { align-self: flex-start; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; }
+.today .big { font-family: var(--font-display); font-size: clamp(1.15rem, 4.8vw, 1.4rem); font-weight: 600; line-height: 1.35; }
+.week { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--surface); }
+.week .l { font-size: 12px; color: var(--accent-text); letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+
+.next { display: flex; flex-direction: column; gap: 18px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.step.hot { border: 2px solid var(--accent); }
+.step .badge { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: var(--accent); color: var(--on-accent); }
+.step .badge.alt { background: transparent; color: var(--accent-text); border: 1px solid var(--accent); }
+.step .name { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.prices { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
+.prices .now { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--fg); }
+.prices .was { font-size: 18px; color: var(--muted); text-decoration: line-through; text-decoration-thickness: 2px; font-variant-numeric: tabular-nums; }
+.prices .save { font-size: 13px; font-weight: 700; color: var(--accent-text); border: 1px solid var(--accent); border-radius: 999px; padding: 3px 10px; }
+.foryou { background: color-mix(in srgb, var(--accent) 14%, transparent); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 12px; font-size: 15px; }
+.step ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
 .step li { padding-left: 18px; position: relative; font-size: 15px; }
-.step li::before { content: ""; position: absolute; left: 0; top: .72em; width: 7px; height: 1px; background: var(--accent-text); }
-.copybox { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 12px 14px; font-size: 15px; user-select: all; overflow-wrap: anywhere; }
+.step li::before { content: ""; position: absolute; left: 0; top: .72em; width: 8px; height: 2px; background: var(--accent-text); }
+
+.dm { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.dm h3 { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 1.2; }
+.btn.big { display: inline-block; align-self: flex-start; padding: 13px 26px; font-size: 16px; font-weight: 600; border-radius: 10px; }
+.copyrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.copybox { flex: 1 1 220px; border: 1px dashed var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; line-height: 1.4; }
+.minibtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--muted); }
+.minibtn:hover { border-color: var(--muted); }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .note { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
@@ -172,6 +213,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
     <button class="linkbtn" id="back" type="button">назад</button>
   </section>
 
+  <section id="calc" class="screen calc" hidden>
+    <div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>Тест пройден</h2>
+    <p class="muted">Считаю твой режим...</p>
+    <div class="bar"><i id="calcFill"></i></div>
+  </section>
+
   <section id="result" class="screen" hidden></section>
 </div>
 
@@ -183,8 +231,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
   var CONFIG = {
     ig: "1chevskaya",
     shareUrl: "",
-    price47: "590 ₽",
-    price30: "1 990 ₽"
+    price47: "590 ₽", old47: "890 ₽", save47: "-300 ₽",
+    price30: "1 990 ₽", old30: "2 690 ₽", save30: "-700 ₽"
   };
 
   var REGIMES = {
@@ -215,6 +263,22 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
         ["Лучше не высовываться и жить стабильно.", "Стабильность - это не маленькая сумма, а предсказуемый рост."],
         ["Я не заслужил столько.", "Сумма - результат моей работы, а не награда за правильное поведение."]
       ],
+      origin: "Чаще всего он формируется там, где деньги были нестабильными или о них говорили с тревогой: «на всё не хватит», «откладывай на чёрный день», «не расслабляйся». Мозг запомнил простое правило: безопасно там, где сумма знакомая. Всё выше он записывает в риск и включает торможение раньше, чем ты успел подумать. Это не характер, а выученная настройка. Настройку можно поменять.",
+      steals2: "<b>Ты берёшь «чуть больше» вместо «намного больше».</b> Реальный скачок дохода кажется нереальным, и ты сам выбираешь вариант поменьше.",
+      leak: "Открой выписку за последние 3 месяца. Найди месяц, когда пришло больше обычного. Посмотри, на что ушла разница в течение 10 дней. Если почти всё ушло на «срочное», это и есть твой потолок в работе. Запиши сумму, которая вернулась к привычной.",
+      trap: [
+        "<b>Копишь «на чёрный день» и живёшь в тревоге.</b> Деньги есть, спокойствия нет, потому что ты ждёшь, что их заберут.",
+        "<b>Закрываешь срочное и называешь это ответственностью.</b> На то, что ведёт к росту, уже не остаётся ни денег, ни сил.",
+        "<b>Ждёшь стабильности, чтобы рискнуть.</b> Но в этом режиме стабильность не наступает: любой плюс мозг сам гасит."
+      ],
+      ifthen: [
+        ["Пришла сумма больше обычной", "Не трать и не перекидывай сразу. Положи на отдельный счёт и подожди 48 часов. Потом реши по списку, а не по эмоции."],
+        ["Тянет потратить на «срочное»", "Спроси себя: «Что случится, если это подождёт 3 дня?» Если ничего, значит, подождёт."],
+        ["Хочешь поднять цену, а рука не идёт", "Скажи новую цифру вслух один раз, до того как писать клиенту. Мозгу нужно услышать её без последствий."]
+      ],
+      pairIdx: [0, 1, 3],
+      for47: "Для твоего режима это ситуации про срочные траты, долги из жалости и срыв сделок на финише.",
+      for30: "30 дней ты тренируешь именно то, что мозг считает опасным: сумму выше привычной, по чуть-чуть, без срывов.",
       today: "Правило 48 часов. Следующую крупную сумму не трогай два дня. Запиши, на что сильнее всего захотелось её потратить. Через 48 часов посмотри, что из этого всё ещё нужно.",
       week: "На этой неделе назови цену на 20% выше обычной хотя бы одному человеку. Не снижай её после реакции. Запиши, что почувствовал.",
       situations: [
@@ -252,6 +316,22 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
         ["Мне нужно, чтобы видели мой результат.", "Мне нужно, чтобы результат работал на меня, даже если его никто не видит."],
         ["Деньги - это счёт моей ценности.", "Деньги - инструмент. Моя ценность не зависит от суммы."]
       ],
+      origin: "Он растёт там, где любовь, внимание или похвала зависели от результата: «молодец» за оценки, сравнения с другими, «вот у соседей». Мозг делает вывод: ценность надо заслужить. Деньги становятся самым наглядным счётом, и «хватит» не наступает: докажешь одному зрителю, находится следующий. Это не слабость, а способ, которым ты когда-то получал признание.",
+      steals2: "<b>Не вкладываешься в то, что не видно:</b> подушка безопасности, налоги, порядок в финансах. Это не даёт ощущения победы, поэтому откладывается.",
+      leak: "Открой траты за последние 3 месяца. Выпиши всё, что куплено ради того, чтобы это увидели: одежда, рестораны, мероприятия, подписки, техника. Сложи. Эта цифра - то, сколько ты платишь, чтобы тебя оценили. Рядом напиши, сколько из этого ты реально использовал.",
+      trap: [
+        "<b>Растишь доход, чтобы стало спокойнее,</b> но планка двигается вместе с тобой: было 200 тысяч, нужно 400, а чувство «достаточно» стоит на месте.",
+        "<b>Покупаешь видимое, чтобы почувствовать успех.</b> Ощущение держится пару дней, а счёт остаётся.",
+        "<b>Не отдыхаешь, пока не закончишь «главное».</b> Главное никогда не заканчивается, потому что за ним стоит следующий уровень."
+      ],
+      ifthen: [
+        ["Увидел чужой доход или успех, и кольнуло", "Не принимай решений в эту минуту. Запиши одну строку: «Мне нужно не это, а ___». Вернись к записи через час."],
+        ["Хочется купить статусную вещь или курс", "Ответь на два вопроса: «Кто это увидит?» и «Что это даст через 3 месяца?». Нет ответа на второй, не покупай."],
+        ["Хочешь взяться ещё за один проект", "Сначала вычеркни один из текущих. Новый берётся только на освободившееся место."]
+      ],
+      pairIdx: [0, 1, 3],
+      for47: "Для твоего режима это ситуации про сравнение с другими, перегруз и обесценивание уже достигнутого.",
+      for30: "30 дней ты тренируешь «достаточно»: действия, которые никто не увидит и не оценит, и которые всё равно работают.",
       today: "Возьми листок. Допиши: «Я хочу заработать больше, чтобы доказать ___». Впиши имя человека. Потом допиши: «А если ему всё равно?». Одно имя, одна честная строчка.",
       week: "Устрой один день без рабочих целей и без плана «на результат». Просто день. Запиши, что в тебе поднялось, когда никто ничего не видит.",
       situations: [
@@ -289,6 +369,22 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
         ["Если меня заметят, значит, я хорош.", "Меня заметят, если я покажу. Показывать - моя работа."],
         ["Мне нужен знак.", "Знак - это моё решение."]
       ],
+      origin: "Он растёт там, где за тебя решали или спасали вовремя: вместо попытки получал готовое решение или совет подождать. Или наоборот: твои попытки заканчивались критикой. Мозг делает вывод: безопаснее дождаться, чем сделать и ошибиться. С годами это превращается в привычку ждать знака, человека или идеального момента.",
+      steals2: "<b>Платишь за обучение, которое откладывается,</b> и за подписки, которые не открываешь. Деньги уходят на ощущение движения, а не на движение.",
+      leak: "Выпиши всё, что откладываешь больше месяца: цену, запуск, разговор о прибавке, смену работы. Рядом поставь сумму, которую это принесло бы за месяц, если бы случилось. Сложи. Это твоя ежемесячная плата за ожидание. Плати её уже сейчас, но не получай ничего взамен.",
+      trap: [
+        "<b>Готовишься: курсы, книги, планы.</b> Подготовка даёт ощущение движения, но ни один рубль не проверен на реальности.",
+        "<b>Ждёшь «ясности» перед шагом.</b> Ясность появляется после шага, а не до него.",
+        "<b>Вешаешь надежды на одного человека или проект.</b> Когда он не сработал, ты не делаешь выводов, а ждёшь следующего."
+      ],
+      ifthen: [
+        ["Ловишь себя на «вот когда будет...»", "Замени на дату. Напиши: «Сделаю ___ до ___». Даже плохая дата лучше, чем «когда-нибудь»."],
+        ["Хочешь купить ещё один курс или книгу", "Сначала сделай одно действие из того, что уже прошёл. Только потом новое."],
+        ["Ждёшь ответа или решения от другого человека", "Напиши ему сам через 48 часов после последнего контакта. Вопрос в одну строку, без извинений."]
+      ],
+      pairIdx: [0, 1, 2],
+      for47: "Для твоего режима это ситуации про откладывание, ожидание момента и знания, которые так и не стали действием.",
+      for30: "30 дней ты тренируешь старт без знака: один шаг в день, не дожидаясь настроения, ясности и подходящей даты.",
       today: "Выбери одно отложенное решение и сделай самый маленький шаг за 15 минут: отправь одно сообщение, назови одну цену, открой один документ.",
       week: "Назначь дедлайн на одно решение, которое ждёшь, и скажи о нём вслух одному человеку. Пусть появится свидетель.",
       situations: [
@@ -326,6 +422,22 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
         ["Мне неловко называть высокую цену.", "Цена - не оценка меня, а оценка результата, который получает клиент."],
         ["Пусть сначала станет идеально.", "Люди ценят живое и настоящее, а не идеальное."]
       ],
+      origin: "Он появляется там, где выделяться было небезопасно: за яркость осуждали, обсуждали за спиной, говорили «не хвастайся», «не высовывайся». Мозг связал заметность с наказанием. Теперь в момент, когда нужно показать результат или назвать цену, срабатывает тот же сигнал опасности, хотя реального риска уже нет.",
+      steals2: "<b>Даёшь скидки и бонусы без просьбы,</b> чтобы тебя не сочли дорогим. Клиент не просил, ты уже отдал.",
+      leak: "Подумай про последние 3 месяца. Сколько раз ты назвал цену ниже, чем хотел, сделал бесплатно или промолчал про оплату? Выпиши каждый случай и сумму. Сложи. Это цена твоей невидимости за квартал.",
+      trap: [
+        "<b>Доводишь до идеала, чтобы потом показать.</b> «Потом» не наступает, потому что идеал недостижим.",
+        "<b>Берёшь меньше и делаешь больше, чтобы тебя не осудили.</b> Платишь за это ты, а не клиент.",
+        "<b>Ждёшь, что результат «скажет сам за себя».</b> Он не говорит. Люди выбирают тех, о ком знают."
+      ],
+      ifthen: [
+        ["Хочется сказать «ну, ничего особенного»", "Остановись и назови один факт: что сделал и какой получился результат. Без оценки и без «просто»."],
+        ["Назвал цену и хочется сразу объяснить или скинуть", "Молчи 5 секунд после цифры. Пауза после цены принадлежит тебе, а не клиенту."],
+        ["Не хочется публиковать результат", "Подай его как пользу: «вот что получилось и как». Не «смотрите, какой я», а «вот что работает»."]
+      ],
+      pairIdx: [0, 1, 2],
+      for47: "Для твоего режима это ситуации про страх назвать цену, скромность в оплате и обесценивание собственных успехов.",
+      for30: "30 дней ты тренируешь видимость маленькими дозами: по одному заметному действию в день, пока мозг не перестанет считать это опасным.",
       today: "Расскажи вслух одному человеку (или выложи один пост) про результат, которым гордишься. Без «просто» и без «ну так, ничего особенного». Одна фраза, без извинений.",
       week: "Назови свою цену клиенту без оправданий и без пауз перед ней. Пауза после цены твоя. Запиши, что произошло.",
       situations: [
@@ -403,7 +515,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
   ];
 
   var $ = function (id) { return document.getElementById(id); };
-  var intro = $("intro"), quiz = $("quiz"), result = $("result");
+  var intro = $("intro"), quiz = $("quiz"), result = $("result"), calc = $("calc");
   var answers = [], order = [], cur = 0;
 
   function shuffle(a) {
@@ -416,7 +528,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
   }
 
   function show(el) {
-    [intro, quiz, result].forEach(function (s) { s.hidden = s !== el; });
+    [intro, quiz, calc, result].forEach(function (s) { s.hidden = s !== el; });
     window.scrollTo(0, 0);
   }
 
@@ -466,7 +578,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
     var sorted = keys.slice().sort(function (a, b) {
       return (score[b] - score[a]) || (gut[b] - gut[a]) || (keys.indexOf(a) - keys.indexOf(b));
     });
-    renderResult(sorted, score, total);
+    show(calc);
+    var cf = $("calcFill");
+    cf.style.width = "0";
+    setTimeout(function () { cf.style.width = "100%"; }, 30);
+    setTimeout(function () { renderResult(sorted, score, total); }, 1700);
   }
 
   function pct(v, total) { return Math.round(v / total * 100); }
@@ -487,6 +603,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
 
   function li(a) { return a.map(function (t) { return "<li>" + t + "</li>"; }).join(""); }
 
+  function sec(id, no, title, body) {
+    return '<section class="sec" id="' + id + '"><div class="sec-h"><span class="no">' + no + '</span><h2>' + title + '</h2></div>' + body + '</section>';
+  }
+
   function renderResult(sorted, score, total) {
     var main = REGIMES[sorted[0]];
     var second = pct(score[sorted[1]], total) >= 25 ? REGIMES[sorted[1]] : null;
@@ -497,81 +617,98 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); o
         '</span><span class="p">' + p + '%</span><span class="b"><i style="width:' + p + '%"></i></span></div>';
     }).join("");
 
-    var pairs = main.pairs.map(function (p) {
-      return '<div class="row"><div class="hold"><div class="l">Держит</div><q>' + p[0] + '</q></div>' +
-             '<div class="free"><div class="l">Отпускает</div><q>' + p[1] + '</q></div></div>';
+    var pairs = main.pairIdx.map(function (i) {
+      var p = main.pairs[i];
+      return '<div class="row"><div class="hold"><div class="l">Тормозит</div><q>' + p[0] + '</q></div>' +
+             '<div class="free"><div class="l">Двигает</div><q>' + p[1] + '</q></div></div>';
+    }).join("");
+
+    var ifthen = main.ifthen.map(function (r) {
+      return '<div class="row"><div class="if"><b>Если</b>' + r[0] + '</div><div class="then"><b>То</b>' + r[1] + '</div></div>';
     }).join("");
 
     var msg = "Привет! Прошёл тест «Денежный режим», у меня «" + main.name + "». Что мне подойдёт: 47 ситуаций или ПЕРЕПРОШИВКА.30?";
-    var igBtn = CONFIG.ig
-      ? '<a class="btn ghost" target="_blank" rel="noopener" href="https://ig.me/m/' + CONFIG.ig + '">Открыть директ в Instagram</a>'
-      : '';
-    var cta = '<div class="copybox" id="msg">' + msg + '</div>' +
-      '<p class="note">' + (CONFIG.ig
-        ? 'Нажми «Скопировать», потом «Открыть директ» и вставь сообщение. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.'
-        : 'Скопируй сообщение и отправь мне в директ в Instagram. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.') + '</p>' +
-      '<div class="actions"><button class="btn" type="button" id="copyMsg">Скопировать сообщение</button>' + igBtn + '</div>';
+    var cta = CONFIG.ig
+      ? '<a class="btn big" id="dmBtn" target="_blank" rel="noopener" href="https://ig.me/m/' + CONFIG.ig + '">Открыть директ</a>' +
+        '<p class="note">Нажми кнопку: сообщение скопируется само, останется вставить его в чат и отправить.</p>' +
+        '<div class="copyrow"><div class="copybox" id="msg">' + msg + '</div><button class="minibtn" type="button" id="copyMsg">Скопировать</button></div>'
+      : '<div class="copyrow"><div class="copybox" id="msg">' + msg + '</div></div>' +
+        '<button class="btn big" type="button" id="copyMsg">Скопировать сообщение</button>' +
+        '<p class="note">Отправь это сообщение мне в директ в Instagram. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.</p>';
+
+    var secs = [
+      ["s-life", "Как это выглядит в жизни", '<div class="scene"><p>' + main.scene + '</p></div>'],
+      ["s-why", "Откуда он берётся и зачем он тебе", '<p>' + main.origin + '</p><p>' + main.benefit + '</p>' +
+        '<p class="muted small">Поэтому от режима так сложно отказаться: он не враг, он защита, которая устарела.</p>'],
+      ["s-steal", "Как он ворует твои деньги", '<ul class="list">' + li(main.steals.concat([main.steals2])) + '</ul>' +
+        '<div class="calcbox"><div class="l">Посчитай свою утечку за 10 минут</div><p>' + main.leak + '</p></div>'],
+      ["s-beyond", "Где это видно не только в деньгах", '<ul class="list">' + li(main.beyond) + '</ul>'],
+      ["s-trap", "Ловушка: делаешь, чтобы стало лучше, а выходит хуже", '<ul class="list">' + li(main.trap) + '</ul>'],
+      ["s-say", "Что ты себе говоришь и что говорить вместо", '<div class="tp">' + pairs + '</div>' +
+        '<p class="muted small">Доход растёт не от позитивного мышления. Он растёт, когда ты перестаёшь действовать по старой мысли в момент, когда она включается.</p>'],
+      ["s-catch", "Как поймать режим в моменте", '<p>Режим включается за секунды. Поэтому нужна готовая реакция, а не «подумаю потом».</p><div class="ifthen">' + ifthen + '</div>']
+    ];
+
+    var short = ["Как выглядит", "Откуда", "Как ворует", "Не только деньги", "Ловушка", "Мысли", "В моменте"];
+    var toc = secs.map(function (s, i) { return '<a href="#' + s[0] + '">' + short[i] + '</a>'; }).join("");
+    var body = secs.map(function (s, i) { return sec(s[0], ("0" + (i + 1)).slice(-2), s[1], s[2]); }).join("");
 
     result.innerHTML =
-      '<div class="split"><span class="tag">Твой главный режим</span>' +
+      '<div class="hero"><span class="pill">Твой главный режим</span>' +
       '<h1>' + main.name + '</h1>' +
       '<p class="verdict">' + main.verdict + '</p>' +
       (second ? '<p class="muted small">Вторым идёт «' + second.name + '». Он включается, когда первый не срабатывает.</p>' : '') +
-      '</div>' +
+      '<div class="shares" aria-label="Распределение режимов">' + shares + '</div></div>' +
 
-      '<div class="shares" aria-label="Распределение режимов">' + shares + '</div>' +
+      '<div class="toc-l">Ниже полный разбор. Прыгай сразу к нужному:</div><nav class="toc">' + toc +
+      '<a href="#s-today">Сделай сегодня</a><a href="#s-next">Что дальше</a></nav>' +
 
-      '<div class="scene"><div class="l">Знакомая сцена</div><p>' + main.scene + '</p></div>' +
+      body +
 
-      '<div class="block"><h3>Чем он тебе помогает</h3><p>' + main.benefit + '</p>' +
-      '<p class="muted small">Поэтому от режима так сложно отказаться: он не враг, он защита, которая устарела.</p></div>' +
+      '<div class="today" id="s-today"><span class="l">Сделай сегодня</span><p class="big">' + main.today + '</p></div>' +
+      '<div class="week"><div class="l">Сделай на этой неделе</div><p>' + main.week + '</p></div>' +
 
-      '<div class="block"><h3>Как он ворует твои деньги</h3><ul class="list">' + li(main.steals) + '</ul></div>' +
+      '<section class="sec next" id="s-next"><div class="sec-h"><span class="no">&rarr;</span><h2>Что дальше</h2></div>' +
+      '<p>Теперь ты знаешь свой режим. Но режим не исчезает от того, что ты о нём узнал. Он включается за пару секунд в конкретный момент: ты называешь цену, получаешь деньги, видишь чужой успех, и рука уже сама делает привычное. Знать мало. Нужна готовая реакция на каждый такой момент.</p>' +
 
-      '<div class="block"><h3>Где это видно не только в деньгах</h3><ul class="list">' + li(main.beyond) + '</ul></div>' +
-
-      '<div class="block"><h3>Мысли, которые держат, и мысли, которые отпускают</h3>' +
-      '<div class="tp">' + pairs + '</div>' +
-      '<p class="muted small">Доход растёт не от позитивного мышления. Он растёт, когда ты перестаёшь действовать по старой мысли в тот момент, когда она включается.</p></div>' +
-
-      '<div class="today"><div><div class="l">Сделай сегодня</div><p>' + main.today + '</p></div>' +
-      '<div><div class="l">Сделай на этой неделе</div><p>' + main.week + '</p></div></div>' +
-
-      '<div class="block next"><h3>Что дальше</h3>' +
-      '<p>Теперь ты знаешь свой режим. Но режим не исчезает от того, что ты о нём узнал. Он включается за пару секунд в конкретный момент: ты называешь цену, получаешь деньги, видишь чужой успех, и рука уже сама делает привычное. Поэтому знать мало. Нужна готовая реакция на каждый такой момент.</p>' +
-
-      '<div class="step"><div class="row"><span class="name">47 ситуаций, которые держат тебя бедным</span><span class="price">' + CONFIG.price47 + '</span></div>' +
+      '<div class="step hot"><span class="badge">Начни с этого</span><div class="name">47 ситуаций, которые держат тебя бедным</div>' +
+      '<div class="prices"><span class="now">' + CONFIG.price47 + '</span><span class="was">' + CONFIG.old47 + '</span><span class="save">' + CONFIG.save47 + '</span></div>' +
+      '<div class="foryou">' + main.for47 + '</div>' +
       '<p class="muted small">Не книга для чтения, а справочник. 47 денежных ситуаций в 6 категориях: траты и импульсы, старт и откладывание, цена и заработок, саботаж и страх успеха, разговоры и отношения, мышление и решения.</p>' +
       '<ul><li><b>Находишь свою ситуацию по номеру.</b> Читать подряд не нужно.</li>' +
-      '<li><b>30 секунд про механизм:</b> что происходит в голове в этот момент. Без осуждения, это работа мозга, а не твой характер.</li>' +
-      '<li><b>Действие на сегодня.</b> Одно конкретное, которое можно закрыть в течение дня.</li></ul>' +
-      '<p class="muted small">Подходит, если хочешь получить рабочие ответы на конкретные случаи уже на этой неделе.</p></div>' +
+      '<li><b>30 секунд про механизм:</b> что происходит в голове в этот момент. Без осуждения: это работа мозга, а не твой характер.</li>' +
+      '<li><b>Действие на сегодня.</b> Одно конкретное, которое можно закрыть в течение дня.</li></ul></div>' +
 
-      '<div class="step"><div class="row"><span class="name">ПЕРЕПРОШИВКА.30</span><span class="price">' + CONFIG.price30 + '</span></div>' +
+      '<div class="step"><span class="badge alt">Чтобы поменять режим целиком</span><div class="name">ПЕРЕПРОШИВКА.30</div>' +
+      '<div class="prices"><span class="now">' + CONFIG.price30 + '</span><span class="was">' + CONFIG.old30 + '</span><span class="save">' + CONFIG.save30 + '</span></div>' +
+      '<div class="foryou">' + main.for30 + '</div>' +
       '<p class="muted small">Знание не меняет поведение, повторение меняет. 30 дней, в каждом одно физическое действие на 10-20 минут и короткое объяснение, какой механизм оно задействует. Без теории и без «подумай об этом».</p>' +
       '<ul>' +
       '<li><b>Неделя 1. Осознанность.</b> Честная фотография твоей точки А: деньги, триггеры, слова, которые говоришь себе.</li>' +
       '<li><b>Неделя 2. Деньги в действии.</b> Первые реальные шаги с деньгами вместо планов.</li>' +
       '<li><b>Неделя 3. Смелость и голос.</b> Цена, просьбы, разговоры, ровно то, что тормозит твой режим.</li>' +
       '<li><b>Неделя 4. Система.</b> Что остаётся работать после 30 дней, включая план на откат.</li></ul>' +
-      '<p class="muted small">Есть Excel-трекер с отметками по дням. Пропустил день, просто отметь и иди дальше. Вины за пропуск там нет.</p>' +
-      '<p class="muted small">Подходит, если хочешь поменять режим целиком, а не латать отдельные ситуации.</p></div>' +
+      '<p class="muted small">Есть Excel-трекер с отметками по дням. Пропустил день, просто отметь и иди дальше. Вины за пропуск там нет.</p></div>' +
 
       '<p class="small">Не знаешь, с чего начать: начни с 47 ситуаций. Они дешевле и быстро покажут, насколько режим управляет тобой в мелочах. Когда захочешь поменять его целиком, ПЕРЕПРОШИВКА.30 продолжает с того места, где заканчиваются ситуации.</p>' +
-      cta + '</div>' +
 
-      '<div class="block"><h3>Поделись результатом</h3>' +
-      '<div class="actions"><button class="btn ghost" type="button" id="share">Скопировать для сторис</button>' +
-      '<button class="btn ghost" type="button" id="again">Пройти заново</button></div></div>' +
+      '<div class="dm"><h3>Напиши мне свой результат - скажу, с чего начать</h3>' + cta + '</div>' +
+      '</section>' +
+
+      '<section class="sec"><div class="actions"><button class="btn ghost" type="button" id="share">Скопировать для сторис</button>' +
+      '<button class="btn ghost" type="button" id="again">Пройти заново</button></div></section>' +
 
       '<p class="note">Это не клинический тест и не диагноз. Это зеркало: оно показывает повторяющийся паттерн в том, как ты думаешь и ведёшь себя с деньгами. Смысл не в ярлыке, а в том, чтобы заметить паттерн и перестать ему подчиняться.</p>';
 
     show(result);
 
     var cm = $("copyMsg");
-    if (cm) cm.addEventListener("click", function () {
-      copyText(msg, function () { cm.textContent = "Скопировано"; setTimeout(function () { cm.textContent = "Скопировать сообщение"; }, 1800); });
-    });
+    function doCopy(btn, label) {
+      copyText(msg, function () { if (btn) { btn.textContent = "Скопировано"; setTimeout(function () { btn.textContent = label; }, 1800); } });
+    }
+    if (cm) { var lbl = cm.textContent; cm.addEventListener("click", function () { doCopy(cm, lbl); }); }
+    var dm = $("dmBtn");
+    if (dm) dm.addEventListener("click", function () { copyText(msg, function () {}); });
     var sh = $("share");
     sh.addEventListener("click", function () {
       var url = CONFIG.shareUrl || location.href;
