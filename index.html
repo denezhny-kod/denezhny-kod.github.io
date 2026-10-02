@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Денежный режим</title>
+<style>
+/* Один узкий столбец, один экран за раз. Тёмная тема по умолчанию, кирпично-красный акцент, системные шрифты (ничего внешнего не грузится, работает без VPN). */
+:root {
+  --bg: #0e0e10;
+  --surface: #161618;
+  --line: #2b2b2f;
+  --fg: #ece9e4;
+  --muted: #8f8c87;
+  --accent: #c9473a;
+  --accent-text: #e0685a;
+  --on-accent: #ffffff;
+  --font-display: "Avenir Next", "Segoe UI", "Helvetica Neue", Roboto, system-ui, -apple-system, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f2ef;
+    --surface: #ffffff;
+    --line: #dcd8d2;
+    --fg: #161617;
+    --muted: #6a6761;
+    --accent: #b53a2e;
+    --accent-text: #a8332a;
+    --on-accent: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f2ef;
+  --surface: #ffffff;
+  --line: #dcd8d2;
+  --fg: #161617;
+  --muted: #6a6761;
+  --accent: #b53a2e;
+  --accent-text: #a8332a;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-inline: 20px;
+  padding-block: 28px 72px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 28px; }
+.brand { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h1 { font-size: clamp(1.7rem, 7vw, 2.3rem); }
+h2 { font-size: clamp(1.25rem, 5vw, 1.6rem); }
+p { margin: 0; }
+.lead { color: var(--fg); font-size: 17px; max-width: 46ch; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.btn {
+  display: inline-block; text-decoration: none; text-align: center;
+  background: var(--accent); color: var(--on-accent); border: 0; border-radius: 10px;
+  padding: 15px 22px; font-weight: 600; font-size: 16px;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.btn:hover { opacity: .92; }
+.btn:active { transform: scale(.98); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.btn.ghost:hover { border-color: var(--muted); opacity: 1; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; align-self: flex-start; }
+
+/* вопросы */
+.progress { display: flex; align-items: center; gap: 14px; }
+.bar { flex: 1; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.q { font-size: clamp(1.15rem, 4.8vw, 1.45rem); line-height: 1.3; text-wrap: balance; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 15px 16px; line-height: 1.45; transition: border-color .15s ease;
+}
+.opt:hover { border-color: var(--muted); }
+.opt.on { border-color: var(--accent); }
+
+/* результат */
+.tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); }
+.verdict { font-size: 18px; max-width: 44ch; }
+.split { display: flex; flex-direction: column; gap: 12px; }
+.shares { display: flex; flex-direction: column; gap: 12px; }
+.share { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "n p" "b b"; gap: 6px 10px; align-items: baseline; }
+.share .n { grid-area: n; font-size: 14px; color: var(--muted); }
+.share .p { grid-area: p; font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.share .b { grid-area: b; height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.share .b i { display: block; height: 100%; background: var(--muted); }
+.share.top .n, .share.top .p { color: var(--fg); font-weight: 600; }
+.share.top .b i { background: var(--accent); }
+
+.block { border-top: 1px solid var(--line); padding-top: 22px; display: flex; flex-direction: column; gap: 14px; }
+.block h3 { margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.list li { padding-left: 18px; position: relative; }
+.list li::before { content: ""; position: absolute; left: 0; top: .78em; width: 7px; height: 1px; background: var(--accent-text); }
+.list li b { font-weight: 600; }
+.scene { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; color: var(--fg); }
+.scene .l { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.tp { display: flex; flex-direction: column; gap: 10px; }
+.tp .row { display: grid; grid-template-columns: 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.tp .row div { min-width: 0; }
+.tp .l { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+.tp .hold .l { color: var(--muted); }
+.tp .free .l { color: var(--accent-text); }
+.tp .free { padding-top: 8px; border-top: 1px solid var(--line); }
+.tp q { quotes: none; font-size: 16px; line-height: 1.45; }
+.today { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.today .l { font-size: 12px; color: var(--accent-text); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; }
+
+.next { display: flex; flex-direction: column; gap: 16px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.step .row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.step .name { font-weight: 700; font-size: 18px; }
+.step .price { font-variant-numeric: tabular-nums; color: var(--fg); font-weight: 600; }
+.step ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.step li { padding-left: 18px; position: relative; font-size: 15px; }
+.step li::before { content: ""; position: absolute; left: 0; top: .72em; width: 7px; height: 1px; background: var(--accent-text); }
+.copybox { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 12px 14px; font-size: 15px; user-select: all; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+.screen { animation: in .25s ease both; display: flex; flex-direction: column; gap: 24px; }
+@keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .screen { animation: none; }
+  .bar > i, .btn, .opt { transition: none; }
+}
+@media (min-width: 560px) {
+  .tp .row { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tp .free { padding-top: 0; border-top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Денежный код · тест</div>
+
+  <section id="intro" class="screen">
+    <h1>Почему ты зарабатываешь меньше, чем можешь</h1>
+    <p class="lead">Тест «Денежный режим»: 10 вопросов, 5 минут. Покажу, какой из 4 режимов мышления тормозит именно твой доход, как он ворует деньги и что с этим делать уже сегодня.</p>
+    <p class="muted small">Отвечай как есть, а не как правильно. Тут никто не проверяет, и это не гороскоп.</p>
+    <button class="btn" id="start" type="button" style="align-self:flex-start">Начать</button>
+  </section>
+
+  <section id="quiz" class="screen" hidden>
+    <div class="progress">
+      <div class="bar"><i id="barFill"></i></div>
+      <span class="count" id="count">1 / 10</span>
+    </div>
+    <h2 class="q" id="qText" aria-live="polite"></h2>
+    <div class="opts" id="opts"></div>
+    <button class="linkbtn" id="back" type="button">назад</button>
+  </section>
+
+  <section id="result" class="screen" hidden></section>
+</div>
+
+<script>
+(function () {
+  // НАСТРОЙКИ. Поменяй под себя:
+  // ig - твой ник в Instagram без @ (например "angelina_ichevskaya"). Тогда рядом с сообщением появится кнопка «Открыть директ». Если пусто, кнопки не будет, человек просто скопирует сообщение и найдёт тебя сам.
+  // shareUrl - адрес, где лежит этот тест. Если пусто, берётся адрес текущей страницы.
+  var CONFIG = {
+    ig: "",
+    shareUrl: "",
+    price47: "590 ₽",
+    price30: "1 990 ₽"
+  };
+
+  var REGIMES = {
+    S: {
+      name: "Потолок выживания",
+      verdict: "Твой мозг защищает привычную сумму. Любая цифра выше кажется ему опасной, даже если она хорошая.",
+      benefit: "Он держит тебя в безопасной зоне. Ты не рискуешь, не падаешь с высоты и не разочаровываешься, потому что никогда не поднимаешься слишком высоко. За это ты платишь потолком.",
+      scene: "Выдался хороший месяц. Ты выдохнул, посмотрел на счёт. Через пару дней сломалась техника, понадобилось срочно кому-то помочь или вдруг захотелось «наконец себя порадовать». К концу месяца на счёте та же сумма, что и всегда. Ты пожимаешь плечами: ну, так бывает.",
+      steals: [
+        "<b>Деньги уходят в первую неделю после роста дохода.</b> Срочная трата, поломка, «надо помочь». Сумма на счёте возвращается к привычной, как по пружине.",
+        "<b>Цены растут медленнее, чем твой опыт.</b> Ты поднимаешь на 5-10% вместо 30%, потому что страшно потерять клиентов.",
+        "<b>Ты держишь «на всякий случай» сумму, которую боишься трогать,</b> и при этом спокойно отдаёшь крупные деньги в долг тем, кто не вернёт.",
+        "<b>Ты отказываешься от крупного заказа или проекта</b> фразой «не потяну», хотя по факту потянул бы.",
+        "<b>Копишь на цель и прямо перед ней находишь причину потратить накопленное.</b> Цель отодвигается, и всё начинается заново.",
+        "<b>Ты проверяешь счёт по нескольку раз в день, когда денег много.</b> Когда денег мало, почему-то спокойнее: привычно."
+      ],
+      beyond: [
+        "<b>Дисциплина.</b> Ты держишься отлично, пока дела идут средне. На пике срываешься: бросаешь режим, тренировки, план. Не из-за лени, а потому что успех пугает.",
+        "<b>Внутренняя свобода.</b> Любое «слишком хорошо» ощущается как ловушка. Расслабиться не получается, ты всё время ждёшь подвоха.",
+        "<b>Ответственность.</b> Ты не строишь ничего на длинную дистанцию, потому что внутри уверен: рухнет. Планы на год кажутся наивными.",
+        "<b>Отношения.</b> Когда всё спокойно и хорошо, ты можешь сам придираться и искать конфликт, лишь бы вернуться к привычной напряжённости.",
+        "<b>Тело и привычки.</b> Хороший режим сна, питания и спорта держится 2-3 недели и ломается ровно тогда, когда становятся видны результаты.",
+        "<b>Решения.</b> Ты соглашаешься на меньшее, чем стоишь, и называешь это «не хочу рисковать»."
+      ],
+      pairs: [
+        ["Хорошо бывает недолго, потом всё равно что-то случится.", "Хорошо - это просто хорошо. Я не должен за него расплачиваться."],
+        ["Если у меня станет много, я это не удержу.", "Деньги остаются там, где для них есть план, а не страх."],
+        ["Лучше не высовываться и жить стабильно.", "Стабильность - это не маленькая сумма, а предсказуемый рост."],
+        ["Я не заслужил столько.", "Сумма - результат моей работы, а не награда за правильное поведение."]
+      ],
+      today: "Правило 48 часов. Следующую крупную сумму не трогай два дня. Запиши, на что сильнее всего захотелось её потратить. Через 48 часов посмотри, что из этого всё ещё нужно.",
+      week: "На этой неделе назови цену на 20% выше обычной хотя бы одному человеку. Не снижай её после реакции. Запиши, что почувствовал.",
+      situations: [
+        "№23 Доход вырос, а денег не стало больше",
+        "№37 Трачу подушку безопасности на «срочное», которое на деле не срочное",
+        "№28 Даю в долг, хотя внутри не хочу",
+        "№27 Срываю сделку на финишной прямой",
+        "№36 Не поднимаю цену годами, потому что «клиенты привыкли»"
+      ]
+    },
+    P: {
+      name: "Доказательный режим",
+      verdict: "Ты зарабатываешь не для себя. Деньги работают как оценка: показать, доказать, подтянуться. Поэтому «хватит» не наступает.",
+      benefit: "Он двигает тебя вперёд. Благодаря ему ты многого добился, потому что остановиться не получается. За это ты платишь тем, что внутри никогда не бывает «достаточно».",
+      scene: "Ты закрыл хорошую сделку. Вместо радости мысль «а у него больше». В тот же вечер ты уже планируешь, как выйти на следующий уровень. Ложишься спать и ловишь себя на том, что отдохнуть не получилось, как будто ты что-то не доделал.",
+      steals: [
+        "<b>Ты тратишь на видимый статус:</b> одежда, техника, рестораны, где тебя увидят. А не на то, что реально нужно тебе.",
+        "<b>Берёшься за больше, чем тянешь, чтобы показать масштаб,</b> и расплачиваешься сорванными сроками, выгоранием и просевшим качеством.",
+        "<b>Сравниваешь свой доход с чужим</b> и меняешь цели под чужую планку, а не под свою.",
+        "<b>Не позволяешь себе отдых и «пустой» месяц.</b> Из-за этого решения принимаешь на износе и ошибаешься дороже.",
+        "<b>Вкладываешься в то, что красиво звучит</b> («дорогой курс», «статусный проект»), и не считаешь окупаемость, потому что это про образ.",
+        "<b>Достиг цели, а жизнь не стала легче.</b> Бизнес растёт, а свободного времени и денег на жизнь не прибавляется."
+      ],
+      beyond: [
+        "<b>Дисциплина.</b> Ты держишься на злости и «надо». Работает, но быстро выжигает. Спад приходит как «ничего не хочу».",
+        "<b>Внутренняя свобода.</b> Ты в гонке, из которой не выйти, потому что финиша нет. Любая пауза воспринимается как отставание.",
+        "<b>Ответственность.</b> Ты берёшь на себя всё и не делегируешь: «никто не сделает как я». На самом деле боишься, что без твоего контроля тебя перестанут ценить.",
+        "<b>Отношения.</b> Ты любишь людей за результат и ждёшь, что любить будут тебя тоже за результат. Просто так быть рядом сложно.",
+        "<b>Тело.</b> Сон, питание и спорт для тебя инструмент. Когда нет ясной цели, всё это валится.",
+        "<b>Привычки.</b> Ты бросаешь привычку, как только перестаёшь видеть быстрый результат, потому что ею не получается ничего доказать."
+      ],
+      pairs: [
+        ["Пока я не стал лучше всех, я недостаточно хорош.", "Я уже достаточно хорош. Рост - мой выбор, а не плата за право на уважение."],
+        ["Если я остановлюсь, меня обгонят.", "Остановка - часть дистанции. Без неё я не дойду."],
+        ["Мне нужно, чтобы видели мой результат.", "Мне нужно, чтобы результат работал на меня, даже если его никто не видит."],
+        ["Деньги - это счёт моей ценности.", "Деньги - инструмент. Моя ценность не зависит от суммы."]
+      ],
+      today: "Возьми листок. Допиши: «Я хочу заработать больше, чтобы доказать ___». Впиши имя человека. Потом допиши: «А если ему всё равно?». Одно имя, одна честная строчка.",
+      week: "Устрой один день без рабочих целей и без плана «на результат». Просто день. Запиши, что в тебе поднялось, когда никто ничего не видит.",
+      situations: [
+        "№21 Сравниваю свой доход со сверстниками и падаю духом",
+        "№32 Работаю больше всех в команде, а платят как всем",
+        "№41 Достигаю цели и сразу обесцениваю её",
+        "№05 Смотрю на людей с деньгами в сторис и злюсь или завидую",
+        "№29 Покупаю себе подарки как компенсацию за плохой день"
+      ]
+    },
+    R: {
+      name: "Режим ожидания спасателя",
+      verdict: "Ты ждёшь, что кто-то или что-то изменит твою ситуацию: человек, момент, удача. Пока ждёшь, решающих шагов не делаешь.",
+      benefit: "Он снимает с тебя давление. Если решение придёт извне, ошибиться нельзя, а значит, и отвечать не за что. За это ты платишь временем, которое идёт, пока ты ждёшь.",
+      scene: "У тебя давно есть идея, цена, которую пора поднять, или решение, которое пора принять. Ты говоришь себе: вот после праздников, вот когда будет больше ясности, вот когда появится нужный человек. Проходит три месяца. Ничего не изменилось, но ты опять веришь, что скоро.",
+      steals: [
+        "<b>Откладываешь повышение цены, запуск, смену работы или разговор о прибавке</b> до «подходящего момента», который не наступает.",
+        "<b>Ждёшь, что тебя заметят:</b> клиент, начальник, партнёр. И не продвигаешь себя сам.",
+        "<b>Держишь деньги без плана «до лучших времён»</b> вместо того, чтобы заставить их работать.",
+        "<b>Вкладываешь время в курсы и подготовку вместо того, чтобы начать продавать и проверять.</b> Обучение становится способом не начинать.",
+        "<b>Возлагаешь надежду на одного человека или один проект,</b> который «всё решит»: инвестор, партнёр, один крупный клиент.",
+        "<b>Соглашаешься на «подработать пока»,</b> которое тянется годами, потому что активно искать другое страшно."
+      ],
+      beyond: [
+        "<b>Дисциплина.</b> Ты стартуешь с энтузиазмом и бросаешь на середине: вот сейчас придёт ясность, тогда начну по-настоящему.",
+        "<b>Внутренняя свобода.</b> Ты считаешь, что свобода придёт позже, как награда, и не создаёшь её сегодня маленькими решениями.",
+        "<b>Ответственность.</b> Ты не принимаешь решение до конца: вдруг передумается, вдруг кто-то подскажет. Всё остаётся «в процессе».",
+        "<b>Отношения.</b> Ты ждёшь, что близкий человек сам догадается, что тебе нужно, и обижаешься, когда он не догадался.",
+        "<b>Тело.</b> «С понедельника», «после отпуска»: здоровье откладывается так же, как деньги.",
+        "<b>Привычки.</b> Новые привычки начинаются от даты (Новый год, 1-е число) и умирают без неё."
+      ],
+      pairs: [
+        ["Когда-нибудь повезёт, нужно только дождаться.", "Везёт тем, кто делает много попыток. Первую я делаю сегодня."],
+        ["Мне нужно ещё немного подготовиться.", "Подготовка не заменяет старт. Я стартую с тем, что есть."],
+        ["Если меня заметят, значит, я хорош.", "Меня заметят, если я покажу. Показывать - моя работа."],
+        ["Мне нужен знак.", "Знак - это моё решение."]
+      ],
+      today: "Выбери одно отложенное решение и сделай самый маленький шаг за 15 минут: отправь одно сообщение, назови одну цену, открой один документ.",
+      week: "Назначь дедлайн на одно решение, которое ждёшь, и скажи о нём вслух одному человеку. Пусть появится свидетель.",
+      situations: [
+        "№09 Жду подходящего момента, чтобы начать",
+        "№34 Откладываю мечту «на потом, когда будет больше денег»",
+        "№01 Хочу заняться финансами, но с понедельника",
+        "№30 Верю, что «в другой семье всё было бы иначе»",
+        "№47 Читаю про деньги и мышление, но не применяю ничего из прочитанного"
+      ]
+    },
+    I: {
+      name: "Режим невидимки",
+      verdict: "Ты можешь больше, чем показываешь. Видимость для тебя равна риску осуждения, поэтому ты сам себя занижаешь.",
+      benefit: "Он защищает тебя от критики, зависти и осуждения. Пока тебя не видно, придраться не к чему. За это ты платишь тем, что тебя не находят ни клиенты, ни деньги, ни возможности.",
+      scene: "Ты сделал сильную работу. Тебе пишут «круто!», а ты отвечаешь «да ладно, ничего особенного». Ты не выкладываешь результат, потому что подумают, что хвастаешься. В итоге клиент, который был твой, достаётся тому, кто слабее, но громче.",
+      steals: [
+        "<b>Цена ниже, чем должна быть,</b> чтобы никто не решил, что ты «слишком много берёшь».",
+        "<b>Ты не рассказываешь о результатах и не показываешь кейсы,</b> поэтому о тебе не знают те, кому ты нужен.",
+        "<b>Ты отказываешься от возможностей, где пришлось бы выступать,</b> вести переговоры при людях, быть в центре внимания.",
+        "<b>Ты делаешь больше, чем оплачено,</b> чтобы никому не быть должным и не вызывать недовольства.",
+        "<b>Ты стесняешься напомнить об оплате</b> и молча ждёшь, а деньги приходят позже или не приходят.",
+        "<b>Ты работаешь на чужую заметность:</b> делаешь результат, а лицом проекта становится другой человек."
+      ],
+      beyond: [
+        "<b>Дисциплина.</b> Ты делаешь много в тени, но когда нужно показать, слабеешь. Подготовка есть, выхода нет.",
+        "<b>Внутренняя свобода.</b> Ты живёшь так, чтобы никто не обсуждал, а не так, как хочешь. Свободу ограничивают чужие мнения, которых даже нет.",
+        "<b>Ответственность.</b> Ты не берёшь авторство вслух, а значит, не принимаешь ответственность за успех, и его легко присвоить.",
+        "<b>Отношения.</b> Ты редко говоришь, чего хочешь, а потом удивляешься, что тебя не услышали.",
+        "<b>Тело.</b> Ты стесняешься заниматься при людях, показывать прогресс, носить то, что нравится.",
+        "<b>Привычки.</b> Привычки, которые заметны другим (спорт, учёба, ранние подъёмы), ты скрываешь, а значит, не получаешь поддержки."
+      ],
+      pairs: [
+        ["Лучше тихо. Не хочу, чтобы обо мне говорили.", "Пусть говорят. Главное, что я делаю то, что считаю нужным."],
+        ["Если я покажу результат, решат, что хвастаюсь.", "Показать результат - значит сообщить, чем я могу быть полезен."],
+        ["Мне неловко называть высокую цену.", "Цена - не оценка меня, а оценка результата, который получает клиент."],
+        ["Пусть сначала станет идеально.", "Люди ценят живое и настоящее, а не идеальное."]
+      ],
+      today: "Расскажи вслух одному человеку (или выложи один пост) про результат, которым гордишься. Без «просто» и без «ну так, ничего особенного». Одна фраза, без извинений.",
+      week: "Назови свою цену клиенту без оправданий и без пауз перед ней. Пауза после цены твоя. Запиши, что произошло.",
+      situations: [
+        "№03 Боюсь назвать новую, более высокую цену",
+        "№04 Не прошу повышение, хотя заслужил",
+        "№25 Соглашаюсь на меньшую оплату, чтобы «не показаться жадным»",
+        "№17 Обесцениваю свои успехи: «это несложно, любой бы смог»",
+        "№42 Работаю «за опыт» бесплатно дольше, чем планировал"
+      ]
+    }
+  };
+
+  // Вес 1.5 у вопросов 8 и 10: там отвечают быстрее и честнее.
+  var QUESTIONS = [
+    { w: 1, t: "Пришла сумма больше обычной: бонус, крупный заказ, подарок. Первая мысль?", o: [
+      { k: "S", t: "Сейчас что-нибудь случится, и она уйдёт. Лучше успеть потратить с пользой." },
+      { k: "P", t: "Отлично. А можно ещё больше? Это пока мало." },
+      { k: "R", t: "Наконец-то. Теперь можно выдохнуть, дальше само пойдёт." },
+      { k: "I", t: "Только бы никто не узнал, сколько я получил." }
+    ]},
+    { w: 1, t: "Пора поднять цену или попросить прибавку. Что делаешь?", o: [
+      { k: "S", t: "Поднимаю на копейки. Любая сумма выше привычной пугает." },
+      { k: "P", t: "Поднимаю сразу сильно. Пусть видят мой уровень." },
+      { k: "R", t: "Жду, когда сами предложат. Если нужно, заметят." },
+      { k: "I", t: "Откладываю. Неловко называть цену вслух." }
+    ]},
+    { w: 1, t: "Что обычно происходит с деньгами через неделю после крупного поступления?", o: [
+      { k: "S", t: "Их почти нет. Срочные траты, поломки, «надо»." },
+      { k: "P", t: "Вложил в то, что поднимает мой статус: вещь, курс, внешний вид." },
+      { k: "R", t: "Лежат и ждут правильного момента, чтобы их куда-то деть." },
+      { k: "I", t: "Спокойно лежат. Живу как раньше, чтобы не выделяться." }
+    ]},
+    { w: 1, t: "Знакомый, с которым вы начинали на одном уровне, теперь зарабатывает заметно больше тебя. Что внутри?", o: [
+      { k: "S", t: "Тревога. Если у меня станет так же, придётся с этим что-то делать." },
+      { k: "P", t: "Злюсь на себя. Надо догонять, иначе я никто." },
+      { k: "R", t: "Ему повезло: подвернулся человек или момент. Мне тоже подвернётся." },
+      { k: "I", t: "Рад за него. Сам так не хочу, это слишком на виду." }
+    ]},
+    { w: 1, t: "Ты сделал что-то очень хорошо: проект, услугу, текст. Что дальше?", o: [
+      { k: "S", t: "Жду спада. Пик, потом провал, так всегда." },
+      { k: "P", t: "Уже думаю, как сделать круче. Хорошо - ещё не достаточно." },
+      { k: "R", t: "Жду, что заметят и напишут. Сам не продвигаю." },
+      { k: "I", t: "Показываю паре людей. Выкладывать или рассказывать неловко." }
+    ]},
+    { w: 1, t: "Какая фраза про тебя ближе всего?", o: [
+      { k: "S", t: "«Я не умею копить, деньги как вода»." },
+      { k: "P", t: "«Я зарабатываю нормально, но мне всё равно мало»." },
+      { k: "R", t: "«Мне бы чуть-чуть помощи или удачи, и всё пошло бы»." },
+      { k: "I", t: "«Я могу больше, но почему-то это не показываю»." }
+    ]},
+    { w: 1, t: "Ты откладываешь важное денежное решение: запуск, смену работы, повышение цены. Почему?", o: [
+      { k: "S", t: "Страшно потерять то, что есть. Стабильно лучше, чем рисковать." },
+      { k: "P", t: "Хочу идеально. Пока не будет идеально, не запущу." },
+      { k: "R", t: "Жду знака, подходящего момента или чтобы кто-то подтолкнул." },
+      { k: "I", t: "Боюсь, что увидят, обсудят и осудят." }
+    ]},
+    { w: 1.5, t: "Какая фраза живёт у тебя в голове про деньги?", o: [
+      { k: "S", t: "«Хорошо бывает недолго, потом всё равно что-то случится»." },
+      { k: "P", t: "«Надо больше. Ещё чуть-чуть, и тогда можно выдохнуть»." },
+      { k: "R", t: "«Когда-нибудь повезёт, нужно только дождаться»." },
+      { k: "I", t: "«Лучше тихо. Не хочу, чтобы обо мне говорили»." }
+    ]},
+    { w: 1, t: "Когда в последний раз было «всё, больше не могу», что это было?", o: [
+      { k: "S", t: "Тревога за деньги, даже когда они были." },
+      { k: "P", t: "Выгорание. Работаю на износ и всё равно мало." },
+      { k: "R", t: "Усталость ждать и обида, что ничего не меняется." },
+      { k: "I", t: "Усталость прятаться и занижать себя." }
+    ]},
+    { w: 1.5, t: "Что пугает тебя сильнее всего?", o: [
+      { k: "S", t: "Что я всё потеряю." },
+      { k: "P", t: "Что окажусь недостаточно хорошим." },
+      { k: "R", t: "Что никто не придёт и придётся всё делать самому." },
+      { k: "I", t: "Что меня увидят и осудят." }
+    ]}
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var intro = $("intro"), quiz = $("quiz"), result = $("result");
+  var answers = [], order = [], cur = 0;
+
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function show(el) {
+    [intro, quiz, result].forEach(function (s) { s.hidden = s !== el; });
+    window.scrollTo(0, 0);
+  }
+
+  function start() {
+    answers = []; cur = 0;
+    order = QUESTIONS.map(function (q) { return shuffle(q.o); });
+    show(quiz);
+    renderQ();
+  }
+
+  function renderQ() {
+    var q = QUESTIONS[cur];
+    $("qText").textContent = q.t;
+    $("count").textContent = (cur + 1) + " / " + QUESTIONS.length;
+    $("barFill").style.width = (cur / QUESTIONS.length * 100) + "%";
+    $("back").hidden = cur === 0;
+    var box = $("opts");
+    box.innerHTML = "";
+    order[cur].forEach(function (o) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt" + (answers[cur] === o.k ? " on" : "");
+      b.textContent = o.t;
+      b.addEventListener("click", function () { pick(o.k, b); });
+      box.appendChild(b);
+    });
+  }
+
+  function pick(k, btn) {
+    answers[cur] = k;
+    btn.classList.add("on");
+    setTimeout(function () {
+      if (cur < QUESTIONS.length - 1) { cur++; renderQ(); }
+      else { finish(); }
+    }, 160);
+  }
+
+  function finish() {
+    $("barFill").style.width = "100%";
+    var score = { S: 0, P: 0, R: 0, I: 0 }, gut = { S: 0, P: 0, R: 0, I: 0 }, total = 0;
+    answers.forEach(function (k, i) {
+      var w = QUESTIONS[i].w;
+      score[k] += w; total += w;
+      if (i === 7 || i === 9) gut[k] += w;
+    });
+    var keys = ["S", "P", "R", "I"];
+    var sorted = keys.slice().sort(function (a, b) {
+      return (score[b] - score[a]) || (gut[b] - gut[a]) || (keys.indexOf(a) - keys.indexOf(b));
+    });
+    renderResult(sorted, score, total);
+  }
+
+  function pct(v, total) { return Math.round(v / total * 100); }
+
+  function copyText(text, done) {
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); done();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  }
+
+  function li(a) { return a.map(function (t) { return "<li>" + t + "</li>"; }).join(""); }
+
+  function renderResult(sorted, score, total) {
+    var main = REGIMES[sorted[0]];
+    var second = pct(score[sorted[1]], total) >= 25 ? REGIMES[sorted[1]] : null;
+
+    var shares = sorted.map(function (k, i) {
+      var p = pct(score[k], total);
+      return '<div class="share' + (i === 0 ? ' top' : '') + '"><span class="n">' + REGIMES[k].name +
+        '</span><span class="p">' + p + '%</span><span class="b"><i style="width:' + p + '%"></i></span></div>';
+    }).join("");
+
+    var pairs = main.pairs.map(function (p) {
+      return '<div class="row"><div class="hold"><div class="l">Держит</div><q>' + p[0] + '</q></div>' +
+             '<div class="free"><div class="l">Отпускает</div><q>' + p[1] + '</q></div></div>';
+    }).join("");
+
+    var msg = "Привет! Прошёл тест «Денежный режим», у меня «" + main.name + "». Что мне подойдёт: 47 ситуаций или ПЕРЕПРОШИВКА.30?";
+    var igBtn = CONFIG.ig
+      ? '<a class="btn ghost" target="_blank" rel="noopener" href="https://ig.me/m/' + CONFIG.ig + '">Открыть директ в Instagram</a>'
+      : '';
+    var cta = '<div class="copybox" id="msg">' + msg + '</div>' +
+      '<p class="note">' + (CONFIG.ig
+        ? 'Нажми «Скопировать», потом «Открыть директ» и вставь сообщение. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.'
+        : 'Скопируй сообщение и отправь мне в директ в Instagram. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.') + '</p>' +
+      '<div class="actions"><button class="btn" type="button" id="copyMsg">Скопировать сообщение</button>' + igBtn + '</div>';
+
+    result.innerHTML =
+      '<div class="split"><span class="tag">Твой главный режим</span>' +
+      '<h1>' + main.name + '</h1>' +
+      '<p class="verdict">' + main.verdict + '</p>' +
+      (second ? '<p class="muted small">Вторым идёт «' + second.name + '». Он включается, когда первый не срабатывает.</p>' : '') +
+      '</div>' +
+
+      '<div class="shares" aria-label="Распределение режимов">' + shares + '</div>' +
+
+      '<div class="scene"><div class="l">Знакомая сцена</div><p>' + main.scene + '</p></div>' +
+
+      '<div class="block"><h3>Чем он тебе помогает</h3><p>' + main.benefit + '</p>' +
+      '<p class="muted small">Поэтому от режима так сложно отказаться: он не враг, он защита, которая устарела.</p></div>' +
+
+      '<div class="block"><h3>Как он ворует твои деньги</h3><ul class="list">' + li(main.steals) + '</ul></div>' +
+
+      '<div class="block"><h3>Где это видно не только в деньгах</h3><ul class="list">' + li(main.beyond) + '</ul></div>' +
+
+      '<div class="block"><h3>Мысли, которые держат, и мысли, которые отпускают</h3>' +
+      '<div class="tp">' + pairs + '</div>' +
+      '<p class="muted small">Доход растёт не от позитивного мышления. Он растёт, когда ты перестаёшь действовать по старой мысли в тот момент, когда она включается.</p></div>' +
+
+      '<div class="today"><div><div class="l">Сделай сегодня</div><p>' + main.today + '</p></div>' +
+      '<div><div class="l">Сделай на этой неделе</div><p>' + main.week + '</p></div></div>' +
+
+      '<div class="block next"><h3>Что дальше</h3>' +
+      '<p>Теперь ты знаешь свой режим. Но режим не исчезает от того, что ты о нём узнал. Он включается за пару секунд в конкретный момент: ты называешь цену, получаешь деньги, видишь чужой успех, и рука уже сама делает привычное. Поэтому знать мало. Нужна готовая реакция на каждый такой момент.</p>' +
+
+      '<div class="step"><div class="row"><span class="name">47 ситуаций, которые держат тебя бедным</span><span class="price">' + CONFIG.price47 + '</span></div>' +
+      '<p class="muted small">Не книга для чтения, а справочник. 47 денежных ситуаций в 6 категориях: траты и импульсы, старт и откладывание, цена и заработок, саботаж и страх успеха, разговоры и отношения, мышление и решения.</p>' +
+      '<ul><li><b>Находишь свою ситуацию по номеру.</b> Читать подряд не нужно.</li>' +
+      '<li><b>30 секунд про механизм:</b> что происходит в голове в этот момент. Без осуждения, это работа мозга, а не твой характер.</li>' +
+      '<li><b>Действие на сегодня.</b> Одно конкретное, которое можно закрыть в течение дня.</li></ul>' +
+      '<p class="muted small">Подходит, если хочешь получить рабочие ответы на конкретные случаи уже на этой неделе.</p></div>' +
+
+      '<div class="step"><div class="row"><span class="name">ПЕРЕПРОШИВКА.30</span><span class="price">' + CONFIG.price30 + '</span></div>' +
+      '<p class="muted small">Знание не меняет поведение, повторение меняет. 30 дней, в каждом одно физическое действие на 10-20 минут и короткое объяснение, какой механизм оно задействует. Без теории и без «подумай об этом».</p>' +
+      '<ul>' +
+      '<li><b>Неделя 1. Осознанность.</b> Честная фотография твоей точки А: деньги, триггеры, слова, которые говоришь себе.</li>' +
+      '<li><b>Неделя 2. Деньги в действии.</b> Первые реальные шаги с деньгами вместо планов.</li>' +
+      '<li><b>Неделя 3. Смелость и голос.</b> Цена, просьбы, разговоры, ровно то, что тормозит твой режим.</li>' +
+      '<li><b>Неделя 4. Система.</b> Что остаётся работать после 30 дней, включая план на откат.</li></ul>' +
+      '<p class="muted small">Есть Excel-трекер с отметками по дням. Пропустил день, просто отметь и иди дальше. Вины за пропуск там нет.</p>' +
+      '<p class="muted small">Подходит, если хочешь поменять режим целиком, а не латать отдельные ситуации.</p></div>' +
+
+      '<p class="small">Не знаешь, с чего начать: начни с 47 ситуаций. Они дешевле и быстро покажут, насколько режим управляет тобой в мелочах. Когда захочешь поменять его целиком, ПЕРЕПРОШИВКА.30 продолжает с того места, где заканчиваются ситуации.</p>' +
+      cta + '</div>' +
+
+      '<div class="block"><h3>Поделись результатом</h3>' +
+      '<div class="actions"><button class="btn ghost" type="button" id="share">Скопировать для сторис</button>' +
+      '<button class="btn ghost" type="button" id="again">Пройти заново</button></div></div>' +
+
+      '<p class="note">Это не клинический тест и не диагноз. Это зеркало: оно показывает повторяющийся паттерн в том, как ты думаешь и ведёшь себя с деньгами. Смысл не в ярлыке, а в том, чтобы заметить паттерн и перестать ему подчиняться.</p>';
+
+    show(result);
+
+    var cm = $("copyMsg");
+    if (cm) cm.addEventListener("click", function () {
+      copyText(msg, function () { cm.textContent = "Скопировано"; setTimeout(function () { cm.textContent = "Скопировать сообщение"; }, 1800); });
+    });
+    var sh = $("share");
+    sh.addEventListener("click", function () {
+      var url = CONFIG.shareUrl || location.href;
+      var t = "Прошёл тест «Денежный режим». Мой режим: «" + main.name + "». А у тебя какой из 4? " + url;
+      copyText(t, function () { sh.textContent = "Скопировано"; setTimeout(function () { sh.textContent = "Скопировать для сторис"; }, 1800); });
+    });
+    $("again").addEventListener("click", function () { show(intro); });
+  }
+
+  $("start").addEventListener("click", start);
+  $("back").addEventListener("click", function () { if (cur > 0) { cur--; renderQ(); } });
+})();
+</script>
+</body>
+</html>
