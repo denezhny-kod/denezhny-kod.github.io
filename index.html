@@ -177,6 +177,13 @@ html { scroll-behavior: smooth; }
 .copybox { flex: 1 1 220px; border: 1px dashed var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; line-height: 1.4; }
 .minibtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--muted); }
 .minibtn:hover { border-color: var(--muted); }
+.mine { background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.mine .l { font-size: 12px; color: var(--accent-text); letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.mine h3 { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 1.25; }
+.sits { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.sits li { font-size: 15px; line-height: 1.4; }
+.sits li b { color: var(--accent-text); font-variant-numeric: tabular-nums; margin-right: 6px; }
+.code { font-family: var(--font-display); font-weight: 800; color: var(--accent-text); }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .note { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
@@ -288,16 +295,15 @@ html { scroll-behavior: smooth; }
         ["Хочешь поднять цену, а рука не идёт", "Скажи новую цифру вслух один раз, до того как писать клиенту. Мозгу нужно услышать её без последствий."]
       ],
       pairIdx: [0, 1, 3],
-      for47: "Для твоего режима это ситуации про срочные траты, долги из жалости и срыв сделок на финише.",
+      for47: "Для твоего режима это ситуации про срочные траты, заначку, которая снова уходит, и прибавку, которая растворяется.",
       for30: "30 дней ты тренируешь именно то, что мозг считает опасным: сумму выше привычной, по чуть-чуть, без срывов.",
       today: "Правило 48 часов. Следующую крупную сумму не трогай два дня. Запиши, на что сильнее всего захотелось её потратить. Через 48 часов посмотри, что из этого всё ещё нужно.",
       week: "На этой неделе назови цену на 20% выше обычной хотя бы одному человеку. Не снижай её после реакции. Запиши, что почувствовал.",
       situations: [
+        "№08 Заначка снова ушла",
         "№23 Доход вырос, а денег не стало больше",
         "№37 Трачу подушку безопасности на «срочное», которое на деле не срочное",
-        "№28 Даю в долг, хотя внутри не хочу",
-        "№27 Срываю сделку на финишной прямой",
-        "№36 Не поднимаю цену годами, потому что «клиенты привыкли»"
+        "№29 Покупаю себе подарки как компенсацию за плохой день"
       ]
     },
     P: {
@@ -347,10 +353,9 @@ html { scroll-behavior: smooth; }
       week: "Устрой один день без рабочих целей и без плана «на результат». Просто день. Запиши, что в тебе поднялось, когда никто ничего не видит.",
       situations: [
         "№21 Сравниваю свой доход со сверстниками и падаю духом",
-        "№32 Работаю больше всех в команде, а платят как всем",
         "№41 Достигаю цели и сразу обесцениваю её",
         "№05 Смотрю на людей с деньгами в сторис и злюсь или завидую",
-        "№29 Покупаю себе подарки как компенсацию за плохой день"
+        "№17 Обесцениваю свои успехи: «это несложно, любой бы смог»"
       ]
     },
     R: {
@@ -447,16 +452,16 @@ html { scroll-behavior: smooth; }
         ["Не хочется публиковать результат", "Подай его как пользу: «вот что получилось и как». Не «смотрите, какой я», а «вот что работает»."]
       ],
       pairIdx: [0, 1, 2],
-      for47: "Для твоего режима это ситуации про страх назвать цену, скромность в оплате и обесценивание собственных успехов.",
+      for47: "Для твоего режима это ситуации про страх назвать цену, скромность в оплате и «неудобно отказать».",
       for30: "30 дней ты тренируешь видимость маленькими дозами: по одному заметному действию в день, пока мозг не перестанет считать это опасным.",
       today: "Расскажи вслух одному человеку (или выложи один пост) про результат, которым гордишься. Без «просто» и без «ну так, ничего особенного». Одна фраза, без извинений.",
       week: "Назови свою цену клиенту без оправданий и без пауз перед ней. Пауза после цены твоя. Запиши, что произошло.",
       situations: [
         "№03 Боюсь назвать новую, более высокую цену",
-        "№04 Не прошу повышение, хотя заслужил",
+        "№04 Не прошу повышение, хотя есть за что",
         "№25 Соглашаюсь на меньшую оплату, чтобы «не показаться жадным»",
-        "№17 Обесцениваю свои успехи: «это несложно, любой бы смог»",
-        "№42 Работаю «за опыт» бесплатно дольше, чем планировал"
+        "№28 Даю в долг, хотя внутри не хочу",
+        "№36 Не поднимаю цену годами, потому что «клиенты привыкли»"
       ]
     }
   };
@@ -643,14 +648,25 @@ html { scroll-behavior: smooth; }
       return '<div class="row"><div class="if"><b>Если</b>' + r[0] + '</div><div class="then"><b>То</b>' + r[1] + '</div></div>';
     }).join("");
 
-    var msg = "Привет! Прошёл тест «Денежный режим», у меня «" + main.name + "». Что мне подойдёт: 47 ситуаций или ПЕРЕПРОШИВКА.30?";
-    var cta = CONFIG.ig
-      ? '<a class="btn big" id="dmBtn" target="_blank" rel="noopener" href="https://ig.me/m/' + CONFIG.ig + '">Открыть директ</a>' +
-        '<p class="note">Нажми кнопку: сообщение скопируется само, останется вставить его в чат и отправить.</p>' +
-        '<div class="copyrow"><div class="copybox" id="msg">' + msg + '</div><button class="minibtn" type="button" id="copyMsg">Скопировать</button></div>'
-      : '<div class="copyrow"><div class="copybox" id="msg">' + msg + '</div></div>' +
-        '<button class="btn big" type="button" id="copyMsg">Скопировать сообщение</button>' +
-        '<p class="note">Отправь это сообщение мне в директ в Instagram. Так я сразу пойму, какой у тебя режим и что тебе подойдёт.</p>';
+    // Кодовое слово «47»: короткое сообщение без рода и без выбора между продуктами. Его можно просто набрать руками.
+    var msg = "47. Мой режим «" + main.name + "»";
+    function cta(where) {
+      return CONFIG.ig
+        ? '<a class="btn big dmBtn" data-where="' + where + '" target="_blank" rel="noopener" href="https://ig.me/m/' + CONFIG.ig + '">Написать «47» в директ</a>' +
+          '<p class="note">Сообщение скопируется само, останется вставить и отправить. Не вставилось? Просто напиши «47».</p>'
+        : '<div class="copyrow"><div class="copybox">' + msg + '</div></div>' +
+          '<button class="btn big copyMsg" type="button">Скопировать сообщение</button>' +
+          '<p class="note">Отправь это мне в директ в Instagram. Или просто напиши «47».</p>';
+    }
+    var mine =
+      '<div class="mine" id="s-mine"><span class="l">Твои ситуации из гайда «47 ситуаций»</span>' +
+      '<ul class="sits">' + main.situations.map(function (t) {
+        var m = t.match(/^№(\d+)\s+(.*)$/);
+        return '<li>' + (m ? '<b>' + m[1] + '</b>' + m[2] : t) + '</li>';
+      }).join("") + '</ul>' +
+      '<h3>Напиши мне в директ <span class="code">«47»</span>, и я пришлю одну из них целиком бесплатно</h3>' +
+      '<p class="small muted">Что на самом деле происходит в голове, готовые слова и одно действие на сегодня. Займёт 5 минут.</p>' +
+      cta("top") + '</div>';
 
     var secs = [
       ["s-life", "Как это выглядит в жизни", '<div class="scene"><p>' + main.scene + '</p></div>'],
@@ -675,6 +691,8 @@ html { scroll-behavior: smooth; }
       '<p class="verdict">' + main.verdict + '</p>' +
       (second ? '<p class="muted small">Вторым идёт «' + second.name + '». Он включается, когда первый не срабатывает.</p>' : '') +
       '<div class="shares" aria-label="Распределение режимов">' + shares + '</div></div>' +
+
+      mine +
 
       '<div class="toc-l">Ниже полный разбор. Прыгай сразу к нужному:</div><nav class="toc">' + toc +
       '<a href="#s-today">Сделай сегодня</a><a href="#s-next">Что дальше</a></nav>' +
@@ -708,7 +726,7 @@ html { scroll-behavior: smooth; }
 
       '<p class="small">Не знаешь, с чего начать: начни с 47 ситуаций. Они дешевле и быстро покажут, насколько режим управляет тобой в мелочах. Когда захочешь поменять его целиком, ПЕРЕПРОШИВКА.30 продолжает с того места, где заканчиваются ситуации.</p>' +
 
-      '<div class="dm"><h3>Напиши мне свой результат - скажу, с чего начать</h3>' + cta + '</div>' +
+      '<div class="dm"><h3>Напиши мне в директ <span class="code">«47»</span> - пришлю одну из твоих ситуаций бесплатно и скажу, с чего начать</h3>' + cta("bottom") + '</div>' +
       '</section>' +
 
       '<section class="sec"><div class="actions"><button class="btn ghost" type="button" id="share">Скопировать для сторис</button>' +
@@ -719,17 +737,22 @@ html { scroll-behavior: smooth; }
     show(result);
     goal("test_result", { regime: main.name });
 
-    var cm = $("copyMsg");
-    function doCopy(btn, label) {
-      copyText(msg, function () { if (btn) { btn.textContent = "Скопировано"; setTimeout(function () { btn.textContent = label; }, 1800); } });
-    }
-    if (cm) { var lbl = cm.textContent; cm.addEventListener("click", function () { doCopy(cm, lbl); }); }
-    var dm = $("dmBtn");
-    if (dm) dm.addEventListener("click", function () { goal("dm_click", { regime: main.name }); copyText(msg, function () {}); });
+    [].forEach.call(result.querySelectorAll(".copyMsg"), function (btn) {
+      var lbl = btn.textContent;
+      btn.addEventListener("click", function () {
+        copyText(msg, function () { btn.textContent = "Скопировано"; setTimeout(function () { btn.textContent = lbl; }, 1800); });
+      });
+    });
+    [].forEach.call(result.querySelectorAll(".dmBtn"), function (btn) {
+      btn.addEventListener("click", function () {
+        goal("dm_click", { regime: main.name, where: btn.getAttribute("data-where") });
+        copyText(msg, function () {});
+      });
+    });
     var sh = $("share");
     sh.addEventListener("click", function () {
       var url = CONFIG.shareUrl || location.href;
-      var t = "Прошёл тест «Денежный режим». Мой режим: «" + main.name + "». А у тебя какой из 4? " + url;
+      var t = "Мой денежный режим: «" + main.name + "». А у тебя какой из 4? Тест на 5 минут: " + url;
       copyText(t, function () { sh.textContent = "Скопировано"; setTimeout(function () { sh.textContent = "Скопировать для сторис"; }, 1800); });
     });
     $("again").addEventListener("click", function () { show(intro); });
